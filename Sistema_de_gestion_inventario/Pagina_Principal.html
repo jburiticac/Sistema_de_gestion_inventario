@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saturia | Cocina Colombiana</title>
+    <style>
+        :root {
+            --amarillo: #FCD116;
+            --azul: #003893;
+            --rojo: #CE1126;
+            --verde: #2D572C;
+            --naranja: #FF6B35;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+        }
+
+        .header {
+            background: var(--amarillo);
+            padding: 1rem;
+            border-bottom: 5px solid var(--azul);
+        }
+
+        .titulo-principal {
+            color: var(--rojo);
+            text-align: center;
+            text-shadow: 2px 2px 0px white;
+            font-size: 2.8rem;
+            font-style: italic;
+            margin: 0;
+        }
+
+        .subtitulo {
+            text-align: center;
+            color: var(--azul);
+            font-size: 1.2rem;
+            margin-top: 0.5rem;
+        }
+
+        .modulos-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .modulo {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 3px solid var(--azul);
+            transition: transform 0.3s;
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .modulo:hover {
+            transform: translateY(-5px);
+        }
+
+        .modulo-gerente {
+            border-color: var(--rojo);
+            background: linear-gradient(45deg, #fff 80%, var(--rojo) 90%);
+        }
+
+        .modulo-admin {
+            border-color: var(--azul);
+            background: linear-gradient(45deg, #fff 80%, var(--azul) 90%);
+        }
+
+        .modulo-mesero {
+            border-color: var(--amarillo);
+            background: linear-gradient(45deg, #fff 80%, var(--amarillo) 90%);
+        }
+
+        .modulo-cliente {
+            border-color: var(--verde);
+            background: linear-gradient(45deg, #fff 80%, var(--verde) 90%);
+        }
+
+        .modulo-cocina {
+            border-color: var(--naranja);
+            background: linear-gradient(45deg, #fff 80%, var(--naranja) 90%);
+        }
+
+        .btn-colombiano {
+            background: var(--rojo);
+            color: white;
+            padding: 0.5rem 2rem;
+            border: none;
+            border-radius: 20px;
+            margin-top: 1rem;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .seccion-roles {
+            margin: 2rem 0;
+            padding: 1rem;
+            background: rgba(252, 209, 22, 0.1);
+        }
+
+        .subtitulo-rol {
+            color: var(--azul);
+            border-bottom: 3px solid currentColor;
+            padding-bottom: 0.5rem;
+            text-align: center;
+            margin: 0 1rem 2rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1 class="titulo-principal">Saturia</h1>
+        <p class="subtitulo">Sabores ancestrales Colombianos</p>
+    </header>
+
+    <main>
+        <!-- Sección Clientes -->
+        <section class="seccion-roles">
+            <h2 class="subtitulo-rol">Para Nuestros Clientes</h2>
+            <div class="modulos-container">
+                <div class="modulo modulo-cliente">
+                    <h3>Menú Digital</h3>
+                    <p>Explora nuestros platos típicos</p>
+                    <a href='Menu_cliente.html'>
+                    <button class="btn-colombiano">Ver Menú</button>
+                     </a>
+                </div>
+                
+                <div class="modulo modulo-cliente">
+                    <h3>Reserva de Mesas</h3>
+                    <p>Garantiza tu espacio</p>
+                    <a href="Reservacion_Cliente.html">
+                    <button class="btn-colombiano">Reservar</button>
+                     </a>
+                </div>
+                
+                <div class="modulo modulo-cliente">
+                    <h3>Mi Perfil</h3>
+                    <p>Gestiona tus datos</p>
+                    
+                    <a href="Perfil_cliente.html">
+
+                    <button class="btn-colombiano">Acceder</button>
+                     </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección Cocina -->
+        <section class="seccion-roles">
+            <h2 class="subtitulo-rol">Cocina</h2>
+            <div class="modulos-container">
+                <div class="modulo modulo-cocina">
+                    <h3>Recepción de Pedidos</h3>
+                    <p>Gestión de órdenes en tiempo real</p>
+                    <a href="Marcacion_Platos.html">
+                    <button class="btn-colombiano">Ver Pedidos</button>
+                </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección Gerente -->
+        <section class="seccion-roles">
+            <h2 class="subtitulo-rol">Gestión Gerencial</h2>
+            <div class="modulos-container">
+                <div class="modulo modulo-gerente">
+                    <h3>Gestión de Inventario</h3>
+                    <p>Control de existencias</p>
+                    <a href="Inventario.html">
+                    <button class="btn-colombiano">Acceder</button>
+                     </a>
+                </div>
+                
+                <div class="modulo modulo-gerente">
+                    <h3>Roles y Permisos</h3>
+                    <p>Administración de usuarios</p>
+                    <a href="Permisos.html">
+                    <button class="btn-colombiano">Gestionar</button>
+                     </a>
+                </div>
+                <div class="modulo modulo-gerente">
+                    <h3>Control por Sucursal</h3>
+                    <p>Inventario detallado</p>
+                    <a href="Seguimiento_Suministros.html">
+                    <button class="btn-colombiano">Controlar</button>
+                     </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección Administrador -->
+        <section class="seccion-roles">
+            <h2 class="subtitulo-rol">Administración</h2>
+            <div class="modulos-container">
+                <div class="modulo modulo-admin">
+                    <h3>Gestión del Menú</h3>
+                    <p>Actualiza la carta</p>
+                    <a href="Menu.html">
+                    <button class="btn-colombiano">Editar</button>
+                    </a>
+                </div>
+                
+                <div class="modulo modulo-admin">
+                    <h3>Reportes de Ventas</h3>
+                    <p>Genera reportes</p>
+                    <a href="Reporte_ventas.html">
+                    <button class="btn-colombiano">Ver</button>
+                     </a>
+                </div>
+                
+                
+            </div>
+        </section>
+
+        <!-- Sección Meseros -->
+        <section class="seccion-roles">
+            <h2 class="subtitulo-rol">Para Meseros</h2>
+            <div class="modulos-container">
+                <div class="modulo modulo-mesero">
+                    <h3>Menú Operativo</h3>
+                    <p>Toma de pedidos</p>
+                    <a href="Pedido.html">
+                    <button class="btn-colombiano">Iniciar</button>
+                     </a>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

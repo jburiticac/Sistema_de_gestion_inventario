@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión de Inventario por Sucursal</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+
+        .filters {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        select, button {
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .inventory-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .inventory-table th,
+        .inventory-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .inventory-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .inventory-table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .quantity-cell {
+            font-weight: bold;
+            color: #28a745;
+        }
+
+        .branch-tag {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            background-color: #e9ecef;
+        }
+
+        .last-modified {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <h1>Control de Inventario por Sucursal</h1>
+    
+    <div class="filters">
+        <select id="branchFilter">
+            <option value="">Todas las sucursales</option>
+            <option value="Norte">Sucursal Norte</option>
+            <option value="Sur">Sucursal Sur</option>
+            <option value="Centro">Sucursal Centro</option>
+        
+        </select>
+
+        <select id="sortBy">
+            <option value="quantity">Ordenar por cantidad</option>
+            <option value="date">Ordenar por fecha modificación</option>
+        </select>
+
+        <button onclick="updateInventory()">Aplicar Filtros</button>
+    </div>
+
+    <table class="inventory-table">
+        <thead>
+            <tr>
+                <th>Suministro</th>
+                <th>Sucursal</th>
+                <th>Cantidad</th>
+                <th>Última Modificación</th>
+            </tr>
+        </thead>
+        <tbody id="inventoryBody">
+        </tbody>
+    </table>
+
+    <script>
+        let inventory = [
+            { id: 1, name: "Cartuchos de Tinta", branch: "Norte", quantity: 150, lastModified: "2024-03-15 14:30" },
+            { id: 2, name: "Papel A4", branch: "Sur", quantity: 850, lastModified: "2024-03-18 09:15" },
+            { id: 3, name: "Tóner Impresora", branch: "Centro", quantity: 45, lastModified: "2024-03-20 16:45" },
+            
+        ];
+
+        function updateInventory() {
+            const branchFilter = document.getElementById('branchFilter').value;
+            const sortBy = document.getElementById('sortBy').value;
+            
+            let filtered = inventory.filter(item => 
+                !branchFilter || item.branch === branchFilter
+            );
+
+            filtered.sort((a, b) => {
+                if (sortBy === 'quantity') {
+                    return b.quantity - a.quantity;
+                } else {
+                    return new Date(b.lastModified) - new Date(a.lastModified);
+                }
+            });
+
+            renderInventory(filtered);
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`;
+        }
+
+        function renderInventory(data) {
+            const tbody = document.getElementById('inventoryBody');
+            tbody.innerHTML = '';
+            
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.name}</td>
+                    <td><span class="branch-tag">${item.branch}</span></td>
+                    <td class="quantity-cell">${item.quantity.toLocaleString()}</td>
+                    <td class="last-modified">${formatDate(item.lastModified)}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Inicializar con todos los datos
+        updateInventory();
+    </script>
+</body>
+</html>

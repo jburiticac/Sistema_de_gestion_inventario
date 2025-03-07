@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa de Manizales con Geolocalización</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        #map {
+            height: 500px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h2>Mapa de Manizales con Geolocalización</h2>
+    <div id="map"></div>
+    
+    <script>
+        // Coordenadas iniciales de Manizales, Caldas
+        var defaultLat = 5.0689, defaultLng = -75.5174, defaultZoom = 14;
+
+        // Inicializar el mapa en Manizales
+        var map = L.map('map').setView([defaultLat, defaultLng], defaultZoom);
+
+        // Agregar capa base de OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Intentar obtener la ubicación del usuario
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(
+                function (position) {
+                    var userLat = position.coords.latitude;
+                    var userLng = position.coords.longitude;
+
+                    // Centrar el mapa en la ubicación del usuario
+                    map.setView([userLat, userLng], 15);
+
+                    // Agregar marcador en la ubicación actual
+                    L.marker([userLat, userLng])
+                        .addTo(map)
+                        .bindPopup("<b>Estás aquí</b>")
+                        .openPopup();
+                },
+                function () {
+                    alert("No se pudo obtener tu ubicación. Mostrando Manizales.");
+                }
+            );
+        } else {
+            alert("Tu navegador no soporta geolocalización.");
+        }
+
+        // Puntos de interés en Manizales
+        var lugares = [
+            { nombre: "Sede Norte", lat: 5.072737, lng: -75.499960 },
+            { nombre: "Sede Centro", lat: 5.067454, lng: -75.519608 },
+            { nombre: "Sede Sur", lat: 5.049625, lng: -75.505600 }
+        ];
+
+        lugares.forEach(lugar => {
+            L.marker([lugar.lat, lugar.lng])
+                .addTo(map)
+                .bindPopup(`<b>${lugar.nombre}</b>`)
+                .openPopup();
+        });
+
+    </script>
+</body>
+</html>

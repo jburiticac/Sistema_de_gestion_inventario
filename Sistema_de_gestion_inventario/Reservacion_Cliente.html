@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reserva de Mesas</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+
+        .reservation-container {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+        }
+
+        .reservation-form {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        select, input, button {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #27ae60;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #219a52;
+        }
+
+        .tables-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .table-item {
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .table-item.available {
+            background-color: #2ecc71;
+            color: white;
+        }
+
+        .table-item.selected {
+            background-color: #f1c40f;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .table-item.unavailable {
+            background-color: #e74c3c;
+            color: white;
+            cursor: not-allowed;
+        }
+
+        .availability-info {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .info-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .confirmation {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .reservation-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Reserva de Mesas</h1>
+    
+    <div class="reservation-container">
+        <div class="reservation-form">
+            <div class="form-group">
+                <label>Sucursal:</label>
+                <select id="branch">
+                    <option value="">Seleccionar Sucursal</option>
+                    <option value="norte">Sucursal Norte</option>
+                    <option value="sur">Sucursal Sur</option>
+                    <option value="centro">Sucursal Centro</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Fecha:</label>
+                <input type="date" id="date" min="">
+            </div>
+
+            <div class="form-group">
+                <label>Hora:</label>
+                <select id="time">
+                    <option value="">Seleccionar Hora</option>
+                    <option value="12:00">12:00 PM</option>
+                    <option value="12:30">12:30 PM</option>
+                    <!-- Más horas pueden ser agregadas -->
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Número de Personas:</label>
+                <input type="number" id="people" min="1" max="12">
+            </div>
+
+            <button onclick="checkAvailability()">Ver Disponibilidad</button>
+        </div>
+
+        <div class="tables-section">
+            <div class="availability-info">
+                <div class="info-item">
+                    <div class="info-color available"></div>
+                    <span>Disponible</span>
+                </div>
+                <div class="info-item">
+                    <div class="info-color selected"></div>
+                    <span>Seleccionado</span>
+                </div>
+                <div class="info-item">
+                    <div class="info-color unavailable"></div>
+                    <span>Ocupado</span>
+                </div>
+            </div>
+
+            <div class="tables-grid" id="tablesGrid"></div>
+            <button onclick="confirmReservation()" style="display: none;" id="confirmButton">Confirmar Reserva</button>
+        </div>
+    </div>
+
+    <div class="confirmation" id="confirmation">
+        <h3>¡Reserva Confirmada!</h3>
+        <p id="confirmationDetails"></p>
+        <button onclick="closeConfirmation()">Cerrar</button>
+    </div>
+
+    <script>
+        // Configurar fecha mínima (hoy)
+        document.getElementById('date').min = new Date().toISOString().split('T')[0];
+        
+        // Generar horas
+        const timeSelect = document.getElementById('time');
+        for(let hour = 12; hour <= 22; hour++){
+            for(let minutes of ['00', '30']){
+                const time = `${hour.toString().padStart(2, '0')}:${minutes}`;
+                timeSelect.innerHTML += `<option value="${time}">${time}</option>`;
+            }
+        }
+
+        // Datos de ejemplo
+        let tables = {
+            norte: [
+                { id: 1, capacity: 2, reservations: [] },
+                { id: 2, capacity: 4, reservations: ['2024-03-20T12:00'] },
+                { id: 3, capacity: 6, reservations: [] }
+            ],
+            sur: [
+                { id: 4, capacity: 4, reservations: [] },
+                { id: 5, capacity: 8, reservations: [] }
+            ],
+            centro: [
+                { id: 6, capacity: 2, reservations: [] },
+                { id: 7, capacity: 4, reservations: [] }
+            ]
+        };
+
+        let selectedTable = null;
+
+        function checkAvailability() {
+            const branch = document.getElementById('branch').value;
+            const date = document.getElementById('date').value;
+            const time = document.getElementById('time').value;
+            const people = parseInt(document.getElementById('people').value);
+
+            if(!branch || !date || !time || !people) {
+                alert('Por favor complete todos los campos');
+                return;
+            }
+
+            const dateTime = `${date}T${time}`;
+            const branchTables = tables[branch];
+            
+            const tablesGrid = document.getElementById('tablesGrid');
+            tablesGrid.innerHTML = '';
+            
+            branchTables.forEach(table => {
+                const isAvailable = !table.reservations.includes(dateTime) && table.capacity >= people;
+                
+                const tableElement = document.createElement('div');
+                tableElement.className = `table-item ${isAvailable ? 'available' : 'unavailable'}`;
+                tableElement.innerHTML = `
+                    <div>Mesa ${table.id}</div>
+                    <div>${table.capacity} personas</div>
+                `;
+                
+                if(isAvailable) {
+                    tableElement.onclick = () => selectTable(table, tableElement);
+                }
+                
+                tablesGrid.appendChild(tableElement);
+            });
+
+            document.getElementById('confirmButton').style.display = 'block';
+        }
+
+        function selectTable(table, element) {
+            if(selectedTable) {
+                selectedTable.element.classList.remove('selected');
+            }
+            
+            selectedTable = { ...table, element };
+            element.classList.add('selected');
+        }
+
+        function confirmReservation() {
+            if(!selectedTable) {
+                alert('Por favor seleccione una mesa');
+                return;
+            }
+
+            const branch = document.getElementById('branch').value;
+            const date = document.getElementById('date').value;
+            const time = document.getElementById('time').value;
+            const people = document.getElementById('people').value;
+            const dateTime = `${date}T${time}`;
+
+            // Agregar reserva
+            tables[branch].find(t => t.id === selectedTable.id).reservations.push(dateTime);
+            
+            // Mostrar confirmación
+            document.getElementById('confirmation').style.display = 'block';
+            document.getElementById('confirmationDetails').innerHTML = `
+                Mesa ${selectedTable.id}<br>
+                ${date} a las ${time}<br>
+                Para ${people} personas<br>
+                Sucursal ${document.getElementById('branch').selectedOptions[0].text}
+            `;
+
+            // Resetear formulario
+            selectedTable = null;
+            document.getElementById('confirmButton').style.display = 'none';
+            document.querySelectorAll('.table-item').forEach(t => t.remove());
+        }
+
+        function closeConfirmation() {
+            document.getElementById('confirmation').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
